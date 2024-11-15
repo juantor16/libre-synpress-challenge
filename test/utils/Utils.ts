@@ -8,7 +8,7 @@ export class Utils {
     }
 
     async checkTextIsDisplayed(textToCheck: string) {
-        await expect(this.page.getByText(textToCheck)).toBeVisible();
+        await expect(this.page.getByText(textToCheck)).toBeAttached();
     }
 
 

@@ -1,7 +1,7 @@
 import { testWithSynpress } from '@synthetixio/synpress'
 import { MetaMask, metaMaskFixtures } from '@synthetixio/synpress/playwright'
 import basicSetup from '../wallet-setup/basic.setup'
-import { HomePage } from '../pages/homePage'
+import { HomePage } from '../pages/HomePage'
 
 const test = testWithSynpress(metaMaskFixtures(basicSetup))
 let homePage: HomePage
@@ -15,7 +15,9 @@ test.beforeEach(async ({ context, metamaskPage, page, extensionId }) => {
 });
 
 
-test('The user can search for an existing ERC20 token and see his balance and deposit history for the selected token', async () => {
+test('The user can search for an existing ERC20 token and see his balance and deposit history for the selected token', {
+  tag: '@regression',
+}, async () => {
   await metamask.switchNetwork('sepolia', true);
   await homePage.visitAndConnectTodApp();
   await homePage.searchForToken('0x9982f9A3bA28c34aD03737745d956EC0668ea440');
@@ -29,7 +31,9 @@ test('The user enter an invalid ERC20 token address', async () => {
   await expect(homePage.submitButton).toBeDisabled();
 })
 
-test('The user clicks the example token link and he will be able to see his balance and deposit history.', async () => {
+test('The user clicks the example token link and he will be able to see his balance and deposit history.', {
+  tag: '@regression',
+}, async () => {
   await metamask.switchNetwork('sepolia', true);
   await homePage.visitAndConnectTodApp();
   await homePage.exampleTokenLink.click();

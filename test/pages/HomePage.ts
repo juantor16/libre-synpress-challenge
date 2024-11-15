@@ -107,8 +107,5 @@ export class HomePage {
         await this.page.waitForTimeout(5000);
         await this.checkCurrentBalance('0')
     }
-    
-    async checkNoTokensLeftMessage() {
-        expect(utils.checkTextIsDisplayed(this.noTokensLeftMessage));
-    }
+
 }

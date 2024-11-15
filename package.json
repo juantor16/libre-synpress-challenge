@@ -7,8 +7,6 @@
     "build:cache": "synpress",
     "build:cache:force": "synpress --force",
     "build:cache:headless": "synpress --headless",
-    "serve:test-dapp": "serve node_modules/@metamask/test-dapp/dist -p 9999",
-    "test:cypress:headful": "cypress run --browser chrome --headed",
     "test:playwright:headful": "playwright test",
     "test:playwright:headless": "HEADLESS=true playwright test",
     "test:playwright:headful:regression": "playwright test --grep @regression"
@@ -27,5 +25,6 @@
     "@types/node": "20.11.17",
     "serve": "14.2.1",
     "typescript": "5.3.3"
-  }
+  },
+  "packageManager": "pnpm@8.0.0"
 }
