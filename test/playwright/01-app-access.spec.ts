@@ -2,9 +2,6 @@ import { testWithSynpress } from '@synthetixio/synpress'
 import { MetaMask, metaMaskFixtures } from '@synthetixio/synpress/playwright'
 import basicSetup from '../wallet-setup/basic.setup'
 import { HomePage } from '../pages/homePage'
-import * as dotenv from 'dotenv';
-
-dotenv.config(); // Cargar variables de entorno
 
 const test = testWithSynpress(metaMaskFixtures(basicSetup))
 let homePage: HomePage
