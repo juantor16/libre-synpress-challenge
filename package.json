@@ -1,0 +1,31 @@
+{
+  "name": "qa-challenge-juan-torres",
+  "version": "1.0.0",
+  "description": "Synpress sample for Libres QA challenge",
+  "main": "index.js",
+  "scripts": {
+    "build:cache": "synpress",
+    "build:cache:force": "synpress --force",
+    "build:cache:headless": "synpress --headless",
+    "serve:test-dapp": "serve node_modules/@metamask/test-dapp/dist -p 9999",
+    "test:cypress:headful": "cypress run --browser chrome --headed",
+    "test:playwright:headful": "playwright test",
+    "test:playwright:headless": "HEADLESS=true playwright test",
+    "test:playwright:headful:regression": "playwright test --grep @regression"
+  },
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "16.4.2"
+  },
+  "devDependencies": {
+    "@metamask/test-dapp": "8.1.0",
+    "@playwright/test": "1.48.2",
+    "@synthetixio/synpress": "4.0.3",
+    "@synthetixio/synpress-tsconfig": "0.0.4",
+    "@types/node": "20.11.17",
+    "serve": "14.2.1",
+    "typescript": "5.3.3"
+  }
+}
