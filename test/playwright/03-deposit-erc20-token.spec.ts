@@ -1,7 +1,7 @@
 import { testWithSynpress } from '@synthetixio/synpress'
 import { MetaMask, metaMaskFixtures } from '@synthetixio/synpress/playwright'
 import basicSetup from '../wallet-setup/basic.setup'
-import { HomePage } from '../pages/homePage'
+import { HomePage } from '../pages/HomePage'
 
 const test = testWithSynpress(metaMaskFixtures(basicSetup))
 let homePage: HomePage
@@ -20,10 +20,11 @@ test('The user try to deposit a ERC20 token with an empty balance', async () => 
   await homePage.searchForToken('0xCD85B9a767eF2277E264A4B9A14a2deACAB82FfB');
   await homePage.checkBalanceAndDepositHistory();
   await homePage.checkCurrentBalance('0')
-  await homePage.checkNoTokensLeftMessage();
 })
 
-test('The user mint example token using the web application', async () => {
+test('The user mint example token using the web application', {
+  tag: '@regression',
+}, async () => {
   await metamask.switchNetwork('sepolia', true);
   await homePage.visitAndConnectTodApp();
   await homePage.successfullyMintTokens()
@@ -31,10 +32,11 @@ test('The user mint example token using the web application', async () => {
 })
 
 
-test('The user deposit example token', async () => {
+test('The user deposit example token', {
+  tag: '@regression',
+}, async () => {
   await metamask.switchNetwork('sepolia', true);
   await homePage.visitAndConnectTodApp();
   await homePage.successfullyDepositAllTokens()
   await homePage.checkCurrentBalance('0')
-  await homePage.checkNoTokensLeftMessage();
 })

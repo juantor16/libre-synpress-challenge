@@ -1,7 +1,7 @@
 import { testWithSynpress } from '@synthetixio/synpress'
 import { MetaMask, metaMaskFixtures } from '@synthetixio/synpress/playwright'
 import basicSetup from '../wallet-setup/basic.setup'
-import { HomePage } from '../pages/homePage'
+import { HomePage } from '../pages/HomePage'
 
 const test = testWithSynpress(metaMaskFixtures(basicSetup))
 let homePage: HomePage
@@ -30,7 +30,9 @@ test('The user accesses the page with Metamask connected to Mainnet network', as
   await expect(homePage.addressInputField).not.toBeVisible();
 })
 
-test('The user accesses the page with Metamask connected to Mainnet network and uses the switch network button', async ({ page }) => {
+test('The user accesses the page with Metamask connected to Mainnet network and uses the switch network button', {
+  tag: '@regression',
+}, async ({ page }) => {
   await homePage.visit();
   await metamask.connectToDapp();
   await metamask.switchNetwork('Ethereum Mainnet')

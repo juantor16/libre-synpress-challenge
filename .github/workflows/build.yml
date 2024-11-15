@@ -1,40 +1,71 @@
 name: E2E Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+      - feature/secure-env-setup
+  pull_request:
+    branches:
+      - '**'
 
 jobs:
   e2e-tests:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'pnpm'
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8.x
-
       - name: Install dependencies
         run: pnpm install
 
-      - name: Install Playwright
-        run: pnpm exec playwright install
+      - name: Install Playwright dependencies
+        run: pnpm exec playwright install-deps
 
-      - name: Create .env file
+      - name: Install Playwright browser (Chromium only)
+        run: pnpm exec playwright install chromium
+
+      - name: Set environment variables
+        env:
+          SEED_PHRASE: ${{ secrets.SEED_PHRASE }}
+          METAMASK_PASSWORD: ${{ secrets.METAMASK_PASSWORD }}
         run: |
-          echo "BASE_URL='https://qa-challange.netlify.app/'" > .env
-          echo "SEED_PHRASE='${{ secrets.SEED_PHRASE }}'" >> .env
-          echo "PASSWORD='${{ secrets.PASSWORD }}'" >> .env
+          echo "SEED_PHRASE=${{ secrets.SEED_PHRASE }}" >> $GITHUB_ENV
+          echo "METAMASK_PASSWORD=${{ secrets.METAMASK_PASSWORD }}" >> $GITHUB_ENV
+          echo "BASE_URL=https://qa-challange.netlify.app/" >> $GITHUB_ENV
 
-      - name: Build cache (headless)
-        run: pnpm run build:cache:headless
+      - name: Install linux dependencies (xvfb)
+        run: sudo apt-get install --no-install-recommends -y xvfb
 
-      - name: Run Playwright tests (headless)
-        run: pnpm run test:playwright:headless
+      - name: Build Synpress cache (headful)
+        run: xvfb-run pnpm run build:cache
+
+      - name: Run E2E tests (headful) for regression
+        run: xvfb-run pnpm run test:playwright:headful:regression
+
+      - name: Archive Playwright HTML report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-html-report
+          path: |
+            reports/html
+          if-no-files-found: warn
+
+      - name: Archive Playwright test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-test-results
+          path: |
+            test-results
+          if-no-files-found: warn

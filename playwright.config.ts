@@ -5,7 +5,7 @@ dotenv.config();
 
 export default defineConfig({
   testDir: './test/playwright',
-
+  outputDir: 'test-results',
   fullyParallel: false,
   retries: 1,
   workers: undefined,
@@ -14,6 +14,7 @@ export default defineConfig({
     baseURL: process.env.BASE_URL || 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
   },
 
   reporter: [
