@@ -11,5 +11,4 @@ export class Utils {
         await expect(this.page.getByText(textToCheck)).toBeAttached();
     }
 
-
 }

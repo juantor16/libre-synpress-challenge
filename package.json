@@ -9,7 +9,8 @@
     "build:cache:headless": "synpress --headless",
     "test:playwright:headful": "playwright test",
     "test:playwright:headless": "HEADLESS=true playwright test",
-    "test:playwright:headful:regression": "playwright test --grep @regression"
+    "test:playwright:headful:regression": "playwright test --grep @regression",
+    "test:playwright:headless:ui": "HEADLESS=true playwright test --ui"
   },
   "type": "module",
   "author": "",

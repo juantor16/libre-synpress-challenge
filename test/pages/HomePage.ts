@@ -5,7 +5,7 @@ import { Utils } from '../utils/Utils'
 let utils: Utils
 
 export class HomePage {
-    
+
     readonly metamask: MetaMask
     readonly page: Page;
     readonly connectButton: Locator;
@@ -21,6 +21,8 @@ export class HomePage {
     readonly depositButton: Locator;
     readonly mintMoreTokensLink: Locator;
     readonly depositInputField: Locator;
+    readonly totalDepositAmount: Locator;
+    readonly latestDepositAmount: Locator;
 
     readonly noTokensLeftMessage = "The deposit is disabled because you don't have any token left in your account.";
 
@@ -41,6 +43,8 @@ export class HomePage {
         this.depositButton = page.locator('button[data-test="DepositToken__Button__deposit"]');
         this.mintMoreTokensLink = page.locator('[data-test="TokenBalance__Div__getMoreExampleTokensAction"]');
         this.depositInputField = page.locator('[data-test="DepositToken__Input__depositAmount"]');
+        this.totalDepositAmount = page.locator('table[data-test="DepositHistory__Table__history"] tfoot td').last()
+        this.latestDepositAmount = page.locator('table tr:has(td[title^="0x"] ) .text-right').last()
     }
 
     async visit() {
@@ -57,7 +61,7 @@ export class HomePage {
     }
 
     async checkDepositHistoryAmount(expectedText: string) {
-        await expect(this.depositHistoryTable.locator(this.totalAmount).first()).toContainText(expectedText);
+        await expect(this.depositHistoryTable.locator(this.totalAmount).last()).toContainText(expectedText);
     }
 
     async checkCurrentBalance(expectedBalance: string) {
@@ -71,6 +75,7 @@ export class HomePage {
     async searchForToken(tokenAddress: string, isForced: boolean = false) {
         await this.addressInputField.fill(tokenAddress);
         await this.submitButton.click({ force: isForced });
+        await this.page.waitForTimeout(2000);
     }
 
     async checkBalanceAndDepositHistory() {
@@ -96,16 +101,51 @@ export class HomePage {
         }
         await this.page.waitForTimeout(5000);
         const getCurrentBalance = await this.getCurrentBalance();
-        await this.depositInputField.fill(getCurrentBalance);
+        await this.depositInputField.fill(getCurrentBalance.replace(',', '.'));
         await this.depositButton.click();
         await this.metamask.approveTokenPermission({ spendLimit: parseInt(getCurrentBalance) });
+        await this.page.waitForTimeout(2000);
+        await this.metamask.confirmTransaction();
+        await this.page.waitForTimeout(10000);
+        await this.page.reload();
+        await this.exampleTokenLink.click();
+    }
+
+    async successfullyDepositTokens(isExampleToken: boolean = true, amount: number) {
+        if (isExampleToken) {
+            await this.exampleTokenLink.click();
+        }
+        await this.page.waitForTimeout(5000);
+        await this.depositInputField.fill(amount.toString());
+        await this.depositButton.click();
+        await this.metamask.approveTokenPermission({ spendLimit: amount });
         await this.page.waitForTimeout(5000);
         await this.metamask.confirmTransaction();
         await this.page.waitForTimeout(10000);
         await this.page.reload();
         await this.exampleTokenLink.click();
         await this.page.waitForTimeout(5000);
-        await this.checkCurrentBalance('0')
+        await expect(this.depositHistoryTable.locator(this.totalAmount).first()).toContainText(amount.toString());
     }
 
+    async mintIfBalanceIsZero() {
+        await this.exampleTokenLink.click();
+        await expect(this.mintMoreTokensLink).toBeVisible();
+        await this.page.waitForTimeout(2000);
+        let getCurrentBalance = parseInt(await this.getCurrentBalance());
+        if (getCurrentBalance === 0) {
+            await this.page.reload()
+            await this.successfullyMintTokens()
+            getCurrentBalance = parseInt(await this.getCurrentBalance());
+        }
+        expect(getCurrentBalance).toBeGreaterThan(0);
+    }
+
+    async getTotalDepositAmount() {
+        return await this.totalDepositAmount.innerText();
+    }
+
+    async getLatestDepositAmount() {
+        return this.latestDepositAmount.innerText();
+    }
 }
