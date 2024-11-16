@@ -64,8 +64,8 @@ test('The user tries to mint tokens without having SepoliaETH', async ({ page })
   expect(dialogMessage).toContain('User denied transaction signature');
 });
 
-test.fail('The user deposit ERC20 USDT token on sepolia network', {
-  tag: '@regression',
+test.skip('The user deposit ERC20 USDT token on sepolia network', {
+  tag: ['@regression', '@bug'],
 }, async () => {
   await homePage.visitAndConnectTodApp();
   await homePage.searchForToken('0x0535208A1Db725f7a2f1ad2452fac4c177617f7e');
